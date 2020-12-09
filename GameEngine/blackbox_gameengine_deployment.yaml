@@ -68,7 +68,7 @@ spec:
             protocol: TCP
         env: 
           - name: "ConnectionStrings__GameEngineDB"
-            value: "Server=tcp:game-sqlserver-a007a1.database.windows.net,1433;Initial Catalog=gamedb;Persist Security Info=False;User ID=gamedbadministrator;Password=fpto4%wD!GC?iV;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            value: "SERVER_CONNECTION_STRING"
           - name: "ARCADE_BACKENDURL"
             value: "http://arcadebackend/pick"
 #      - name: istio-proxy
