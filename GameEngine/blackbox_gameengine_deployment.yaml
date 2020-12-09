@@ -14,31 +14,31 @@ spec:
       name: blackboxgameengine
       targetPort: 80
       protocol: TCP
-    - port: 81
-      name: istio-proxy
-      targetPort: 81
-      protocol: TCP    
+#    - port: 81
+#      name: istio-proxy
+#      targetPort: 81
+#      protocol: TCP    
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: default-reader
-  namespace: default
-subjects:
-- kind: Group
-  name: system:serviceaccounts
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: default-reader
+#  namespace: default
+#subjects:
+#- kind: Group
+#  name: system:serviceaccounts
+#  apiGroup: rbac.authorization.k8s.io
+#roleRef:
+#  kind: ClusterRole
+#  name: cluster-admin
+#  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blackboxgameengine
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       name: blackboxgameengine      
@@ -57,28 +57,33 @@ spec:
       - name: blackboxgameengine
         image: ghcr.io/azure-adventure-day/azure-adventure-day-coach/gamedayengine-web:latest
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
         ports:
           - containerPort: 80
             name: gameengine
             protocol: TCP
         env: 
           - name: "ConnectionStrings__GameEngineDB"
-            value: "Server=tcp:game-sqlserver.windows.net,1433;Initial Catalog=gamedb;Persist Security Info=False;User ID=gamedbadministrator;Password=herebepassword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            value: "Server=tcp:game-sqlserver-a007a1.database.windows.net,1433;Initial Catalog=gamedb;Persist Security Info=False;User ID=gamedbadministrator;Password=fpto4%wD!GC?iV;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
           - name: "ARCADE_BACKENDURL"
             value: "http://arcadebackend/pick"
-      - name: istio-proxy
-        image: ghcr.io/azure-adventure-day/azure-adventure-day-coach/gamedayengine-sidecar:latest
-        imagePullPolicy: Always
-        volumeMounts:
-        - mountPath: /meshconfig
-          name: config-volume
-        ports:
-          - containerPort: 81
-            name: servicemesh         
-            protocol: TCP
-        env: 
-          - name: "ASPNETCORE_URLS"
-            value: "http://*:81"
+#      - name: istio-proxy
+#        image: ghcr.io/azure-adventure-day/azure-adventure-day-coach/gamedayengine-sidecar:latest
+#        imagePullPolicy: Always
+#        volumeMounts:
+#        - mountPath: /meshconfig
+#          name: config-volume
+#        ports:
+#          - containerPort: 81
+#            name: servicemesh         
+#            protocol: TCP
+#        env: 
+#          - name: "ASPNETCORE_URLS"
+#            value: "http://*:81"
       volumes:
       - name: config-volume
         hostPath:
